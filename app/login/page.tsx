@@ -6,19 +6,40 @@ import { setSession } from "@/lib/auth";
 
 type Role = "student" | "doctor" | "moderator" | "admin" | "president";
 
+
+const roleLanding: Record<Role, string> = {
+    student: "/student/assistant",
+    doctor: "/doctor/assistant",
+    moderator: "/moderator/review",
+    admin: "/admin/dashboard",
+    president: "/president/dashboard",
+};
+
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("user@university.edu");
-    const [password, setPassword] = useState("password");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [role, setRole] = useState<Role>("student");
     const [loading, setLoading] = useState(false);
 
-    async function handleLogin() {
+    async function handleLogin(e: React.FormEvent) {
+        e.preventDefault();
+        if (loading) return;
+
+        const cleanEmail = email.trim();
+
         setLoading(true);
+
         // mock auth
         await new Promise((r) => setTimeout(r, 400));
-        setSession({ email, role, name: role[0].toUpperCase() + role.slice(1) });
-        router.push("/dashboard");
+
+        setSession({
+            email: cleanEmail,
+            role,
+            name: role[0].toUpperCase() + role.slice(1),
+        });
+
+        router.push(roleLanding[role]);
         setLoading(false);
     }
 
@@ -68,11 +89,13 @@ export default function LoginPage() {
                 {/* Right */}
                 <div className="p-10">
                     <h2 className="text-3xl font-extrabold text-gray-900">Welcome Back!</h2>
-                    <p className="mt-2 text-gray-500">
-                        Log in to access your documents and AI assistant.
-                    </p>
+                    <p className="mt-2 text-gray-500">Log in to access your documents and AI assistant.</p>
 
-                    <div className="mt-10 space-y-5">
+                    {/* ✅ Form بدل div */}
+                    <form
+                        onSubmit={(e) => handleLogin(e)}
+                        className="mt-10 space-y-5"
+                    >
                         <div>
                             <div className="text-xs font-bold text-gray-500 tracking-widest mb-2">
                                 EMAIL ADDRESS
@@ -84,6 +107,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full bg-transparent outline-none text-sm"
                                     placeholder="name@university.edu"
+                                    autoComplete="email"
                                 />
                             </div>
                         </div>
@@ -100,6 +124,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full bg-transparent outline-none text-sm"
                                     placeholder="••••••••"
+                                    autoComplete="current-password"
                                 />
                             </div>
                         </div>
@@ -115,6 +140,7 @@ export default function LoginPage() {
                                     return (
                                         <button
                                             key={r.value}
+                                            type="button" // ✅ مهم: يمنع submit
                                             onClick={() => setRole(r.value)}
                                             className={[
                                                 "px-4 py-2 rounded-full border text-sm font-semibold transition",
@@ -131,24 +157,31 @@ export default function LoginPage() {
                         </div>
 
                         <button
-                            disabled={loading}
-                            onClick={handleLogin}
+                            type="submit" // ✅ submit مع Enter
+                            disabled={loading || !email || !password}
                             className="w-full mt-3 py-4 rounded-2xl bg-[#4C3BFF] text-white font-extrabold text-lg shadow-lg hover:opacity-95 disabled:opacity-60"
                         >
                             {loading ? "Signing In..." : "Sign In  →"}
                         </button>
 
                         <div className="mt-8 flex items-center justify-between text-sm">
-                            <button className="text-[#4C3BFF] font-semibold hover:underline">
+                            <button
+                                type="button"
+                                className="text-[#4C3BFF] font-semibold hover:underline"
+                            >
                                 New here? Register Account
                             </button>
-                            <button className="text-gray-400 font-semibold hover:underline">
+                            <button
+                                type="button"
+                                className="text-gray-400 font-semibold hover:underline"
+                            >
                                 Forgot Password?
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     );
+
 }

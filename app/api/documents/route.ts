@@ -6,17 +6,18 @@ export async function GET() {
   try {
     const documents = await prisma.document.findMany({
       include: {
-        user: {
-          select: { name: true, email: true } // بيجيب اسم صاحب المستند معاه
-        }
+        user: { select: { name: true, email: true } }
       },
-      orderBy: { createdAt: 'desc' } // يرتبهم من الأحدث للأقدم
+      orderBy: { createdAt: "desc" }
     });
+
     return NextResponse.json(documents);
   } catch (error) {
+    console.error("GET /api/documents error:", error); // ✅ أهم سطر
     return NextResponse.json({ error: "Failed to fetch documents" }, { status: 500 });
   }
 }
+
 
 // 2. وظيفة لإضافة مستند جديد
 export async function POST(request: Request) {

@@ -1,4 +1,8 @@
-export default function AssistantPanel() {
+type Props = {
+    role: "student" | "doctor" | "moderator" | "admin" | "president";
+};
+
+export default function AssistantPanel({ role }: Props) {
     return (
         <div className="rounded-[28px] bg-white border border-black/5 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-black/5 flex items-center justify-between">
@@ -7,9 +11,14 @@ export default function AssistantPanel() {
                         🤖
                     </div>
                     <div>
-                        <div className="font-extrabold text-gray-900">Intelligence Assistant</div>
+                        <div className="font-extrabold text-gray-900">
+                            Intelligence Assistant
+                        </div>
                         <div className="text-xs text-gray-500">
-                            ● <span className="text-green-600 font-semibold">POWERED BY RAG ENGINE</span>
+                            ●{" "}
+                            <span className="text-green-600 font-semibold">
+                                POWERED BY RAG ENGINE
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -21,7 +30,9 @@ export default function AssistantPanel() {
 
             <div className="p-6">
                 <div className="rounded-2xl bg-[#F6F7FB] border border-black/5 p-5 text-gray-700">
-                    Hello! I am the University Intelligent Assistant. I can answer questions about institutional documents based on your <b>student</b> permissions.
+                    Hello! I am the University Intelligent Assistant. I can answer
+                    questions about institutional documents based on your{" "}
+                    <b className="capitalize">{role}</b> permissions.
                     <br />
                     What would you like to know today?
                 </div>
