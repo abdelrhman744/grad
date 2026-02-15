@@ -1,8 +1,56 @@
+"use client"; // ضروري عشان الـ Hooks تشتغل
+
+import { useRef } from "react";
 import DocumentTable from "@/components/DocumentTable";
 
 export default function DocumentsPage() {
+    // 1. تعريف الـ Ref للوصول للـ Input المخفي
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // 2. دالة تشغيل الزرار
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    // 3. دالة التعامل مع الملف بعد اختياره
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                alert("Uploaded successfully!");
+                window.location.reload(); // عشان يحدث الجدول ويظهر الملف الجديد
+            } else {
+                const err = await response.json();
+                alert("Error: " + err.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to connect to the server");
+        }
+    };
+
     return (
         <div className="space-y-6">
+            {/* Input مخفي عشان يفتح نافذة الملفات */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden" 
+                accept=".pdf,.doc,.docx,.txt,.md"
+            />
+
+            {/* التصميم العلوي كما هو في الكود الأول */}
             <div className="flex items-start justify-between">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900">Document Repository</h1>
@@ -11,11 +59,16 @@ export default function DocumentsPage() {
                     </p>
                 </div>
 
-                <button className="px-6 py-3 rounded-2xl bg-[#4C3BFF] text-white shadow-sm font-semibold hover:opacity-95">
+                {/* الزرار بنفس ستايل الكود الأول لكن بيشغل دالة الرفع */}
+                <button 
+                    onClick={handleUploadClick}
+                    className="px-6 py-3 rounded-2xl bg-[#4C3BFF] text-white shadow-sm font-semibold hover:opacity-95"
+                >
                     ＋ Upload Document
                 </button>
             </div>
 
+            {/* باقي تصميم الصفحة (البحث والجدول) */}
             <div className="rounded-[28px] bg-white border border-black/5 shadow-sm p-6">
                 <div className="flex flex-col md:flex-row gap-3 items-center">
                     <input

@@ -48,13 +48,21 @@ export default function LoginPage() {
         // mock delay
         await new Promise((r) => setTimeout(r, 350));
 
+        // --- التعديل هنا: تخزين الكوكيز ---
+        // 1. حالة تسجيل الدخول
+        document.cookie = `unidoc_auth=true; path=/; max-age=3600`; 
+        // 2. رتبة المستخدم
+        document.cookie = `user_role=${role}; path=/; max-age=3600`;
+        // 3. (جديد) رقم المستخدم ID ليتم استخدامه في الـ Backend/Prisma
+        document.cookie = `user_id=${cleanId}; path=/; max-age=3600`;
+
         setSession({
             email: `${role}@university.edu`,
             role,
             name: role[0].toUpperCase() + role.slice(1),
         });
 
-        router.push(roleLanding[role]);
+        router.replace(roleLanding[role]);
         setLoading(false);
     }
 
@@ -95,7 +103,7 @@ export default function LoginPage() {
                             our intelligent RAG-powered system.
                         </p>
 
-                        {/* Quick role hint pills (شكل بس) */}
+                        {/* Quick role hint pills */}
                         <div className="mt-8 flex flex-wrap gap-2">
                             {["Student", "Doctor", "Moderator", "Admin", "President"].map((x) => (
                                 <span

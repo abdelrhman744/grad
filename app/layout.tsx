@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { ReactNode } from "react";
+import HistoryGuard from "@/components/HistoryGuard"; // استيراد المكون الجديد
 
 export const metadata = {
   title: "UniDoc",
@@ -8,8 +9,13 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning> 
+      <body suppressHydrationWarning>
+        {/* نغلف الـ children بمكون الـ HistoryGuard */}
+        <HistoryGuard>
+          {children}
+        </HistoryGuard>
+      </body>
     </html>
   );
 }
